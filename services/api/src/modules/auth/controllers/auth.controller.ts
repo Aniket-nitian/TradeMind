@@ -1,0 +1,199 @@
+import { Request, Response } from "express";
+import { asyncHandler } from "../../../shared/middlewares/async-handler.js";
+import { ApiResponse } from "../../../shared/response/api-response.js";
+import { authService } from "../services/auth.service.js";
+import {
+  changePasswordSchema,
+  forgotPasswordSchema,
+  googleLoginSchema,
+  loginSchema,
+  registerSchema,
+  resetPasswordSchema,
+  verifyEmailSchema,
+} from "../validations/auth.validation.js";
+import type { AuthRequest } from "../guards/auth.guard.js";
+
+export const register = asyncHandler(async (req: Request, res: Response) => {
+  const data = registerSchema.parse(req.body);
+
+  const user = await authService.register(data);
+
+  return new ApiResponse(
+    true,
+    "Account created successfully.",
+    user
+  ).send(res, 201);
+});
+
+export const login = asyncHandler(async (req: Request, res: Response) => {
+  const data = loginSchema.parse(req.body);
+
+  const result = await authService.login(data, {
+    ipAddress: req.ip,
+    userAgent: req.headers["user-agent"],
+  });
+
+  res.cookie("refreshToken", result.refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 30 * 24 * 60 * 60 * 1000,
+  });
+
+  return new ApiResponse(
+    true,
+    "Login successful",
+    {
+      user: result.user,
+      accessToken: result.accessToken,
+    }
+  ).send(res);
+});
+
+export const googleLogin = asyncHandler(async (req: Request, res: Response) => {
+  const data = googleLoginSchema.parse(req.body);
+
+  const result = await authService.loginWithGoogle(data.idToken, {
+    ipAddress: req.ip,
+    userAgent: req.headers["user-agent"],
+  });
+
+  res.cookie("refreshToken", result.refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 30 * 24 * 60 * 60 * 1000,
+  });
+
+  return new ApiResponse(
+    true,
+    "Login successful",
+    {
+      user: result.user,
+      accessToken: result.accessToken,
+    }
+  ).send(res);
+});
+
+export const refresh = asyncHandler(async (_req: Request, res: Response) => {
+  const token = _req.cookies.refreshToken;
+
+  const result = await authService.refresh(token);
+
+  res.cookie("refreshToken", result.refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 30 * 24 * 60 * 60 * 1000,
+  });
+
+  return new ApiResponse(
+    true,
+    "Token refreshed successfully",
+    {
+      accessToken: result.accessToken,
+    }
+  ).send(res);
+});
+
+export const logout = asyncHandler(async (req: Request, res: Response) => {
+  const token = req.cookies.refreshToken;
+
+  await authService.logout(token);
+
+  res.clearCookie("refreshToken");
+
+  return new ApiResponse(
+    true,
+    "Logged out successfully",
+    null
+  ).send(res);
+});
+
+export const logoutAll = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
+    await authService.logoutAll(req.userId!);
+
+    res.clearCookie("refreshToken");
+
+    return new ApiResponse(
+      true,
+      "Logged out from all devices",
+      null
+    ).send(res);
+  }
+);
+
+export const verifyEmail = asyncHandler(
+  async (req: Request, res: Response) => {
+    const data = verifyEmailSchema.parse(req.body);
+
+    await authService.verifyEmail(data.token);
+
+    return new ApiResponse(
+      true,
+      "Email verified successfully.",
+      null
+    ).send(res);
+  }
+);
+
+export const resendVerification = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
+    await authService.resendVerification(req.userId!);
+
+    return new ApiResponse(
+      true,
+      "Verification email sent.",
+      null
+    ).send(res);
+  }
+);
+
+export const forgotPassword = asyncHandler(
+  async (req: Request, res: Response) => {
+    const data = forgotPasswordSchema.parse(req.body);
+
+    const result = await authService.requestPasswordReset(data.email);
+
+    return new ApiResponse(true, result.message, null).send(res);
+  }
+);
+
+export const resetPassword = asyncHandler(
+  async (req: Request, res: Response) => {
+    const data = resetPasswordSchema.parse(req.body);
+
+    await authService.resetPassword(data.token, data.newPassword);
+
+    return new ApiResponse(
+      true,
+      "Password reset successfully.",
+      null
+    ).send(res);
+  }
+);
+
+export const changePassword = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
+    const data = changePasswordSchema.parse(req.body);
+
+    await authService.changePassword(req.userId!, data);
+
+    return new ApiResponse(
+      true,
+      "Password changed successfully.",
+      null
+    ).send(res);
+  }
+);
+
+export const me = asyncHandler(async (req: AuthRequest, res: Response) => {
+  return new ApiResponse(
+    true,
+    "Current user",
+    {
+      userId: req.userId,
+    }
+  ).send(res);
+});

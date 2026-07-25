@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@import "./styles/theme.css";
+@import "./styles/typography.css";
+
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+
+  margin: 0;
+}

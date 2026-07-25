@@ -1,0 +1,711 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum TradingExperience {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  PROFESSIONAL
+}
+
+enum RiskProfile {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum TradingStyle {
+  INTRADAY
+  SWING
+  POSITIONAL
+  SCALPING
+  INVESTOR
+}
+
+enum SubscriptionPlan {
+  FREE
+  PREMIUM
+}
+
+enum SubscriptionStatus {
+  INCOMPLETE
+  ACTIVE
+  CANCELED
+  PAST_DUE
+  PAUSED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
+enum NotificationType {
+  INFO
+  SUCCESS
+  WARNING
+  ERROR
+}
+
+enum TradeSide {
+  BUY
+  SELL
+}
+
+enum TradeSegment {
+  EQUITY
+  FUTURES
+  OPTIONS
+  CURRENCY
+  COMMODITY
+}
+
+enum TradeProduct {
+  CNC
+  MIS
+  NRML
+}
+
+enum TradeStatus {
+  OPEN
+  CLOSED
+  PARTIAL
+  CANCELLED
+}
+
+enum Emotion {
+  CONFIDENT
+  FEAR
+  GREED
+  FOMO
+  REVENGE
+  DISCIPLINED
+  HESITATION
+  CALM
+  ANXIOUS
+  FOCUSED
+  BORED
+}
+
+enum Broker {
+  ZERODHA
+  ANGEL_ONE
+  UPSTOX
+  GROWW
+  DHAN
+  FYERS
+  ICICI_DIRECT
+}
+
+enum Exchange {
+  NSE
+  BSE
+  NFO
+  CDS
+  MCX
+}
+
+enum ImageType {
+  ENTRY
+  EXIT
+  SETUP
+  CHART
+  RESULT
+}
+
+enum CsvImportStatus {
+  PENDING
+  COMPLETED
+  PARTIAL
+  FAILED
+}
+
+model User {
+  id String @id @default(uuid())
+
+  firstName       String
+  lastName        String?
+  email           String  @unique
+  passwordHash    String?
+  googleId        String? @unique
+  isEmailVerified Boolean @default(false)
+
+  username  String? @unique
+  avatarUrl String?
+  bio       String?
+  role      Role    @default(USER)
+
+  tradingExperience TradingExperience?
+  riskProfile       RiskProfile?
+  preferredBroker   Broker?
+  tradingStyle      TradingStyle?
+
+  timezone     String?          @default("Asia/Kolkata")
+  currency     String?          @default("INR")
+  subscription SubscriptionPlan @default(FREE)
+
+  defaultAccountSize     Float?
+  defaultRiskPercent     Float?
+  brokerSyncLookbackDays Int?   @default(30)
+
+  emailNotificationsEnabled    Boolean @default(true)
+  whatsappNotificationsEnabled Boolean @default(false)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  refreshTokens      RefreshToken[]
+  emailVerifications EmailVerification[]
+  passwordResets     PasswordReset[]
+  sessions           Session[]
+  trades             Trade[]
+  strategies         Strategy[]
+  tags               Tag[]
+  mistakes           Mistake[]
+  brokerAccounts     BrokerAccount[]
+  aiConversations    AIConversation[]
+  aiMemory           AiMemory?
+  subscriptions      Subscription[]
+  payments           Payment[]
+  notifications      Notification[]
+  auditLogs          AuditLog[]
+  portfolioSnapshots PortfolioSnapshot[]
+  csvImports         CsvImport[]
+  brokerSyncLogs     BrokerSyncLog[]
+  capitalTransactions CapitalTransaction[]
+
+  @@index([email])
+  @@index([username])
+  @@index([subscription])
+  @@index([role])
+}
+
+model Session {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  deviceName String?
+  deviceType String?
+  browser    String?
+  ipAddress  String?
+  userAgent  String?
+
+  isActive     Boolean  @default(true)
+  lastActiveAt DateTime @default(now())
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  refreshTokens RefreshToken[]
+
+  @@index([userId])
+  @@index([isActive])
+}
+
+model RefreshToken {
+  id     String @id @default(uuid())
+  token  String @unique
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  sessionId String?
+  session   Session? @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
+  deletedAt DateTime?
+
+  @@index([userId])
+  @@index([sessionId])
+  @@index([expiresAt])
+}
+
+model EmailVerification {
+  id     String @id @default(uuid())
+  token  String @unique
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
+  deletedAt DateTime?
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model PasswordReset {
+  id     String @id @default(uuid())
+  token  String @unique
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
+  deletedAt DateTime?
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model Strategy {
+  id String @id @default(uuid())
+
+  // Owner
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Basic Info
+  name String
+  description String?
+
+  // Trading Rules
+  setupRules String?
+  entryRules String?
+  exitRules String?
+  riskRules String?
+
+  // Metadata
+  timeframe String?
+  market String?
+
+  // Status
+  isActive Boolean @default(true)
+
+  // Relations
+  trades Trade[]
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+
+  @@unique([userId, name])
+  @@index([userId])
+  @@index([isActive])
+}
+
+model Tag {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name     String
+  color    String?
+  isActive Boolean @default(true)
+
+  tradeTags TradeTag[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@unique([userId, name])
+  @@index([userId])
+}
+
+model Mistake {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name        String
+  description String?
+
+  tradeMistakes TradeMistake[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@unique([userId, name])
+  @@index([userId])
+}
+
+model Trade {
+  id String @id @default(uuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  broker        Broker?
+  brokerTradeId String?
+  exchange      Exchange?
+
+  symbol  String
+  segment TradeSegment
+  product TradeProduct
+  side    TradeSide
+  status  TradeStatus  @default(CLOSED)
+
+  quantity   Int
+  entryPrice Float
+  exitPrice  Float?
+  stopLoss   Float?
+  target     Float?
+
+  entryTime DateTime
+  exitTime  DateTime?
+
+  brokerage Float @default(0)
+  taxes     Float @default(0)
+
+  grossPnl Float?
+  netPnl   Float?
+
+  riskAmount   Float?
+  rewardAmount Float?
+  rrRatio      Float?
+
+  confidence Int @default(5)
+
+  strategyId String?
+  strategy   Strategy? @relation(fields: [strategyId], references: [id], onDelete: SetNull)
+
+  reasonForEntry String?
+  reasonForExit  String?
+  followedPlan   Boolean?
+
+  tradeNotes    String?
+  lessonLearned String?
+  aiSummary     String?
+  aiRating      Float?
+  aiMistakes    String?
+  aiSuggestions String?
+
+  emotionBefore Emotion?
+  emotionAfter  Emotion?
+
+  embedding  Float[]   @default([])
+  embeddedAt DateTime?
+
+  deletedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  images          TradeImage[]
+  tags            TradeTag[]
+  tradeMistakes   TradeMistake[]
+  tradeChecklists TradeChecklist[]
+
+  @@index([userId])
+  @@index([symbol])
+  @@index([status])
+  @@index([entryTime])
+  @@index([broker])
+  @@index([strategyId])
+}
+
+model CsvImport {
+  id String @id @default(uuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  fileName String
+  broker   Broker?
+
+  status CsvImportStatus @default(PENDING)
+
+  totalRows      Int
+  validRows      Int
+  invalidRows    Int
+  duplicateRows  Int
+  importedRows   Int @default(0)
+
+  rows   Json
+  errors Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+}
+
+model TradeImage {
+  id      String @id @default(uuid())
+  tradeId String
+  trade   Trade  @relation(fields: [tradeId], references: [id], onDelete: Cascade)
+
+  imageUrl String
+  publicId  String?
+  type     ImageType @default(SETUP)
+
+  createdAt DateTime  @default(now())
+  deletedAt DateTime?
+
+  @@index([tradeId])
+}
+
+model TradeTag {
+  tradeId String
+  tagId   String
+
+  trade Trade @relation(fields: [tradeId], references: [id], onDelete: Cascade)
+  tag   Tag   @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@id([tradeId, tagId])
+  @@index([tagId])
+}
+
+model TradeMistake {
+  tradeId   String
+  mistakeId String
+
+  trade   Trade   @relation(fields: [tradeId], references: [id], onDelete: Cascade)
+  mistake Mistake @relation(fields: [mistakeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@id([tradeId, mistakeId])
+  @@index([mistakeId])
+}
+
+model TradeChecklist {
+  id      String @id @default(uuid())
+  tradeId String
+  trade   Trade  @relation(fields: [tradeId], references: [id], onDelete: Cascade)
+
+  title     String
+  isChecked Boolean @default(false)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([tradeId])
+}
+
+model BrokerAccount {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  broker          Broker
+  brokerUserId    String?
+  accessTokenEnc  String?
+  refreshTokenEnc String?
+  isConnected     Boolean   @default(false)
+  lastSyncedAt    DateTime?
+  tokenExpiresAt  DateTime?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  syncLogs BrokerSyncLog[]
+
+  @@unique([userId, broker])
+  @@index([userId])
+}
+
+model BrokerSyncLog {
+  id String @id @default(uuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  brokerAccountId String
+  brokerAccount   BrokerAccount @relation(fields: [brokerAccountId], references: [id], onDelete: Cascade)
+
+  broker Broker
+  status CsvImportStatus @default(PENDING)
+
+  fromDate DateTime
+  toDate   DateTime
+
+  totalFetched  Int
+  matchedTrades Int
+  importedRows  Int @default(0)
+  duplicateRows Int @default(0)
+
+  errors Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([brokerAccountId])
+}
+
+model PortfolioSnapshot {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  totalValue    Float
+  invested      Float
+  unrealizedPnl Float?
+  realizedPnl   Float
+  cash          Float @default(0)
+
+  createdAt DateTime  @default(now())
+  deletedAt DateTime?
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+enum CapitalTransactionType {
+  DEPOSIT
+  WITHDRAWAL
+}
+
+model CapitalTransaction {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  type   CapitalTransactionType
+  amount Float
+  note   String?
+
+  transactionDate DateTime
+
+  createdAt DateTime  @default(now())
+  deletedAt DateTime?
+
+  @@index([userId])
+  @@index([transactionDate])
+}
+
+model AIConversation {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  title       String?
+  contextType String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  messages AIMessage[]
+
+  @@index([userId])
+}
+
+model AIMessage {
+  id             String         @id @default(uuid())
+  conversationId String
+  conversation   AIConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  role    String
+  content String
+
+  createdAt DateTime  @default(now())
+  deletedAt DateTime?
+
+  @@index([conversationId])
+}
+
+model AiMemory {
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  summary String @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Subscription {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  plan   SubscriptionPlan   @default(FREE)
+  status SubscriptionStatus @default(ACTIVE)
+
+  currentPeriodStart     DateTime?
+  currentPeriodEnd       DateTime?
+  providerSubscriptionId String?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  payments Payment[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([plan])
+}
+
+model Payment {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  subscriptionId String?
+  subscription   Subscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+
+  providerPaymentId String?
+  providerOrderId   String?
+  amount            Float
+  currency          String        @default("INR")
+  status            PaymentStatus @default(PENDING)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([userId])
+  @@index([subscriptionId])
+  @@index([status])
+}
+
+model Notification {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  type    NotificationType @default(INFO)
+  title   String
+  message String
+  isRead  Boolean          @default(false)
+
+  createdAt DateTime  @default(now())
+  deletedAt DateTime?
+
+  @@index([userId])
+  @@index([isRead])
+}
+
+model AuditLog {
+  id     String  @id @default(uuid())
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  action   String
+  entity   String?
+  entityId String?
+  metadata Json?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([action])
+  @@index([entity])
+}

@@ -1,0 +1,14 @@
+**/node_modules
+**/.venv
+**/__pycache__
+**/*.pyc
+**/dist
+**/.turbo
+.git
+.github
+**/.env
+**/.env.*
+!**/.env.example
+*.md
+.vscode
+.idea
