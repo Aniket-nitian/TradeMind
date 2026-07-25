@@ -13,6 +13,20 @@ import {
 } from "../validations/auth.validation.js";
 import type { AuthRequest } from "../guards/auth.guard.js";
 
+const isProd = process.env.NODE_ENV === "production";
+
+// The web app and API are on different subdomains in production (both under
+// onrender.com, which is itself in the Public Suffix List — so they're
+// cross-site, not just cross-origin). A Lax cookie is dropped on the
+// cross-site XHR calls the frontend makes, so refresh silently fails on
+// every reload. None is required to actually reach the API in that setup.
+const REFRESH_COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: isProd,
+  sameSite: (isProd ? "none" : "lax") as "none" | "lax",
+  maxAge: 30 * 24 * 60 * 60 * 1000,
+};
+
 export const register = asyncHandler(async (req: Request, res: Response) => {
   const data = registerSchema.parse(req.body);
 
@@ -33,12 +47,7 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
     userAgent: req.headers["user-agent"],
   });
 
-  res.cookie("refreshToken", result.refreshToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: 30 * 24 * 60 * 60 * 1000,
-  });
+  res.cookie("refreshToken", result.refreshToken, REFRESH_COOKIE_OPTIONS);
 
   return new ApiResponse(
     true,
@@ -58,12 +67,7 @@ export const googleLogin = asyncHandler(async (req: Request, res: Response) => {
     userAgent: req.headers["user-agent"],
   });
 
-  res.cookie("refreshToken", result.refreshToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: 30 * 24 * 60 * 60 * 1000,
-  });
+  res.cookie("refreshToken", result.refreshToken, REFRESH_COOKIE_OPTIONS);
 
   return new ApiResponse(
     true,
@@ -80,12 +84,7 @@ export const refresh = asyncHandler(async (_req: Request, res: Response) => {
 
   const result = await authService.refresh(token);
 
-  res.cookie("refreshToken", result.refreshToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: 30 * 24 * 60 * 60 * 1000,
-  });
+  res.cookie("refreshToken", result.refreshToken, REFRESH_COOKIE_OPTIONS);
 
   return new ApiResponse(
     true,
@@ -101,7 +100,11 @@ export const logout = asyncHandler(async (req: Request, res: Response) => {
 
   await authService.logout(token);
 
-  res.clearCookie("refreshToken");
+  res.clearCookie("refreshToken", {
+    httpOnly: REFRESH_COOKIE_OPTIONS.httpOnly,
+    secure: REFRESH_COOKIE_OPTIONS.secure,
+    sameSite: REFRESH_COOKIE_OPTIONS.sameSite,
+  });
 
   return new ApiResponse(
     true,
@@ -114,7 +117,11 @@ export const logoutAll = asyncHandler(
   async (req: AuthRequest, res: Response) => {
     await authService.logoutAll(req.userId!);
 
-    res.clearCookie("refreshToken");
+    res.clearCookie("refreshToken", {
+      httpOnly: REFRESH_COOKIE_OPTIONS.httpOnly,
+      secure: REFRESH_COOKIE_OPTIONS.secure,
+      sameSite: REFRESH_COOKIE_OPTIONS.sameSite,
+    });
 
     return new ApiResponse(
       true,
