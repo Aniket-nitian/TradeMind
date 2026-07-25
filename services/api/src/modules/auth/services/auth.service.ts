@@ -10,6 +10,7 @@ import { AppError } from "../../../shared/exceptions/AppError.js";
 import { generateToken } from "../../../shared/utils/token.js";
 import { sendMail } from "../../../shared/utils/mailer.js";
 import { logAudit } from "../../../shared/services/audit-log.service.js";
+import { logger } from "../../../shared/logger/logger.js";
 import { env } from "../../../config/env.js";
 import type {
   ChangePasswordInput,
@@ -63,11 +64,11 @@ export class AuthService {
 
     const link = `${env.CLIENT_URL}/verify-email?token=${token}`;
 
-    await sendMail({
+    sendMail({
       to: email,
       subject: "Verify your TradeMind AI email",
       html: `<p>Welcome to TradeMind AI.</p><p>Click the link below to verify your email:</p><p><a href="${link}">${link}</a></p><p>This link expires in 24 hours.</p>`,
-    });
+    }).catch((err) => logger.error({ err }, "Failed to send verification email"));
   }
 
   async resendVerification(userId: string) {
@@ -109,11 +110,11 @@ export class AuthService {
 
       const link = `${env.CLIENT_URL}/reset-password?token=${token}`;
 
-      await sendMail({
+      sendMail({
         to: user.email,
         subject: "Reset your TradeMind AI password",
         html: `<p>We received a request to reset your password.</p><p><a href="${link}">${link}</a></p><p>This link expires in 1 hour. If you didn't request this, you can ignore this email.</p>`,
-      });
+      }).catch((err) => logger.error({ err }, "Failed to send password reset email"));
     }
 
     return {

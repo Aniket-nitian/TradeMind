@@ -1,5 +1,6 @@
 import { AppError } from "../../../shared/exceptions/AppError.js";
 import { sendMail } from "../../../shared/utils/mailer.js";
+import { logger } from "../../../shared/logger/logger.js";
 import { notificationRepository } from "../repositories/notification.repository.js";
 import { NotificationType } from "../../../generated/prisma/enums.js";
 
@@ -53,11 +54,11 @@ export class NotificationService {
         );
 
         if (options.email && user.emailNotificationsEnabled) {
-            await sendMail({
+            sendMail({
                 to: user.email,
                 subject: data.title,
                 html: `<p>${data.message}</p>`,
-            });
+            }).catch((err) => logger.error({ err }, "Failed to send notification email"));
         }
 
         return notification;
