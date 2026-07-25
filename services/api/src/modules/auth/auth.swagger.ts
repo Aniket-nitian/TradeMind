@@ -358,5 +358,3 @@
  *       200:
  *         description: Current authenticated user id.
  */
-
-export {};

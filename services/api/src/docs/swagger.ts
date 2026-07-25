@@ -97,8 +97,10 @@ const options: swaggerJsdoc.Options = {
   },
 
   apis: [
-    "./src/modules/**/*.swagger.ts"
-]
+    import.meta.url.endsWith(".ts")
+      ? "./src/modules/**/*.swagger.ts"
+      : "./dist/modules/**/*.swagger.js"
+  ]
 };
 
 const swaggerSpec = swaggerJsdoc(options);

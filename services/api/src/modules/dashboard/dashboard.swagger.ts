@@ -216,5 +216,3 @@
  *       200:
  *         description: Trade streak analytics fetched successfully.
  */
-
-export {};
