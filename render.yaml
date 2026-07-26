@@ -10,6 +10,15 @@
 # Create that separately at neon.tech and paste its connection string into
 # trademind-api's DATABASE_URL below.
 #
+# Neon gives you two connection strings — grab both from the Neon dashboard:
+#   DATABASE_URL: the POOLED one (hostname contains "-pooler") — used by the
+#     running app for normal queries.
+#   DIRECT_URL: the DIRECT one (no "-pooler" in the hostname) — used only for
+#     `prisma migrate deploy` at container startup. Migrations need a real
+#     single-session connection to hold a postgres advisory lock; Neon's
+#     pooled endpoint doesn't reliably support that and causes migrate to
+#     fail with a P1002 timeout.
+#
 # Any envVar with `sync: false` must be filled in manually from the Render
 # dashboard after the first deploy — never commit real secrets here.
 
@@ -29,7 +38,9 @@ services:
       - key: API_PREFIX
         value: /api/v1
       - key: DATABASE_URL
-        sync: false # Neon connection string
+        sync: false # Neon POOLED connection string (hostname has "-pooler")
+      - key: DIRECT_URL
+        sync: false # Neon DIRECT connection string (no "-pooler") — used only for migrations
       - key: JWT_ACCESS_SECRET
         sync: false
       - key: JWT_REFRESH_SECRET
