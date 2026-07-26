@@ -4,7 +4,6 @@ import {
   PenLine,
   Percent,
   ShieldCheck,
-  Sparkles,
   TrendingUp,
   Upload,
 } from "lucide-react";
@@ -49,7 +48,7 @@ export function DashboardOnboarding() {
       <Card className="overflow-hidden border-primary/20 bg-gradient-to-br from-primary/10 via-card to-card">
         <CardContent className="flex flex-col items-center gap-2 py-12 text-center">
           <div className="mb-1 flex size-12 items-center justify-center rounded-2xl bg-primary/15 text-primary">
-            <Sparkles className="size-6" />
+            <TrendingUp className="size-6" />
           </div>
           <h2 className="text-xl font-semibold">
             {firstName ? `Welcome, ${firstName}` : "Welcome to TradeMind AI"}

@@ -1,4 +1,4 @@
-import { Brain, Sparkles, Target, TrendingUp } from "lucide-react";
+import { BarChart3, Brain, Target, TrendingUp } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { InsightCard } from "@/components/common/InsightCard";
@@ -57,7 +57,7 @@ export function InsightSidebar() {
         <Card className="bg-gradient-to-br from-primary/20 to-primary/5">
           <CardContent className="flex flex-col gap-2">
             <p className="flex items-center gap-1.5 text-sm font-semibold">
-              <Sparkles className="size-4" />
+              <BarChart3 className="size-4" />
               Performance summary
             </p>
             <p className="text-sm text-muted-foreground">{performance.data.summary}</p>

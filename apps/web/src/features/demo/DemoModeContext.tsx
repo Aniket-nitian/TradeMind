@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
-import { Lock, Sparkles } from "lucide-react";
+import { Lock, UserPlus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -60,7 +60,7 @@ export function DemoModeProvider({ children }: { children: ReactNode }) {
               Log in
             </Button>
             <Button onClick={() => navigate("/register")}>
-              <Sparkles className="size-4" />
+              <UserPlus className="size-4" />
               Create free account
             </Button>
           </DialogFooter>

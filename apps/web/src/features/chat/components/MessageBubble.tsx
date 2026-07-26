@@ -1,4 +1,4 @@
-import { Sparkles } from "lucide-react";
+import { Bot } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -15,7 +15,7 @@ export function MessageBubble({ message }: { message: ChatMessage }) {
     <div className={cn("flex items-start gap-2.5", isUser ? "justify-end" : "justify-start")}>
       {!isUser && (
         <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary">
-          <Sparkles className="size-3.5" />
+          <Bot className="size-3.5" />
         </div>
       )}
       <div

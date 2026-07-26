@@ -1,8 +1,9 @@
-import { NavLink } from "react-router-dom";
-import { TrendingUp } from "lucide-react";
+import { Link, NavLink } from "react-router-dom";
+import { Crown, TrendingUp } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/auth-store";
 import { useProfile } from "@/features/auth/hooks";
@@ -45,21 +46,34 @@ export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         ))}
       </nav>
 
-      <div className="mt-auto flex items-center gap-2 border-t border-sidebar-border p-3">
-        <Avatar className="size-8">
-          {profile?.avatarUrl && <AvatarImage src={profile.avatarUrl} alt={user?.firstName} />}
-          <AvatarFallback>{initials}</AvatarFallback>
-        </Avatar>
-        <div className="flex min-w-0 flex-1 flex-col">
-          <span className="truncate text-sm font-medium">
-            {user?.firstName} {user?.lastName}
-          </span>
-          <span className="truncate text-xs text-muted-foreground">{user?.email}</span>
+      <div className="mt-auto flex flex-col gap-2 border-t border-sidebar-border p-3">
+        <div className="flex items-center gap-2">
+          <Avatar className="size-8">
+            {profile?.avatarUrl && <AvatarImage src={profile.avatarUrl} alt={user?.firstName} />}
+            <AvatarFallback>{initials}</AvatarFallback>
+          </Avatar>
+          <div className="flex min-w-0 flex-1 flex-col">
+            <span className="truncate text-sm font-medium">
+              {user?.firstName} {user?.lastName}
+            </span>
+            <span className="truncate text-xs text-muted-foreground">{user?.email}</span>
+          </div>
+          {subscription && (
+            <Badge variant={subscription === "PREMIUM" ? "default" : "secondary"}>
+              {subscription}
+            </Badge>
+          )}
         </div>
-        {subscription && (
-          <Badge variant={subscription === "PREMIUM" ? "default" : "secondary"}>
-            {subscription}
-          </Badge>
+
+        {subscription && subscription !== "PREMIUM" && (
+          <Link
+            to="/settings#billing"
+            onClick={onNavigate}
+            className={cn(buttonVariants({ size: "sm" }), "w-full")}
+          >
+            <Crown className="size-4" />
+            Upgrade to Premium
+          </Link>
         )}
       </div>
     </div>

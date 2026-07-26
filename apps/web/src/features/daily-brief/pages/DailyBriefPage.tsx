@@ -3,9 +3,9 @@ import {
   Brain,
   CheckCircle2,
   Gauge,
+  Lightbulb,
   Newspaper,
   ShieldCheck,
-  Sparkles,
   Target,
 } from "lucide-react";
 
@@ -126,7 +126,7 @@ export default function DailyBriefPage() {
               footer={data.confidence.observation}
             />
             <InsightCard
-              icon={<Sparkles className="size-4" />}
+              icon={<Lightbulb className="size-4" />}
               category="Improvement"
               categoryVariant="default"
               title="One thing to improve"

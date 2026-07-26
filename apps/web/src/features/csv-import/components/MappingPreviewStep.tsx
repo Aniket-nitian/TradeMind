@@ -1,4 +1,4 @@
-import { AlertTriangle, CheckCircle2, Sparkles } from "lucide-react";
+import { AlertTriangle, CheckCircle2 } from "lucide-react";
 
 import { StatTile } from "@/features/dashboard/components/StatTile";
 import {
@@ -18,7 +18,7 @@ export function MappingPreviewStep({ result }: { result: CsvPreviewResult }) {
     <div className="flex flex-col gap-6">
       {result.detectedBroker && (
         <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
-          <Sparkles className="size-4 text-primary" />
+          <CheckCircle2 className="size-4 text-primary" />
           Detected as a {BROKER_LABELS[result.detectedBroker as Broker] ?? result.detectedBroker}{" "}
           export — no broker was selected, so this was recognized automatically.
         </p>

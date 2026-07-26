@@ -1,4 +1,4 @@
-import { AlertTriangle, Brain, LogIn, LogOut, ShieldCheck, Sparkles } from "lucide-react";
+import { AlertTriangle, Brain, Lightbulb, LogIn, LogOut, ShieldCheck } from "lucide-react";
 
 import { ErrorState } from "@/components/common/ErrorState";
 import { InsightCard } from "@/components/common/InsightCard";
@@ -95,7 +95,7 @@ export function TradeReviewPanel({ tradeId }: { tradeId: string }) {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Sparkles className="size-4" />
+              <Lightbulb className="size-4" />
               Improvements
             </CardTitle>
           </CardHeader>

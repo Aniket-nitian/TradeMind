@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { AlertTriangle, Sparkles, Target, TrendingDown } from "lucide-react";
+import { AlertTriangle, Lightbulb, Target, TrendingDown } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -18,7 +18,7 @@ export function PerformanceInsights() {
     <Card className="flex h-full flex-col">
       <CardContent className="flex flex-1 flex-col gap-3">
         <p className="flex items-center gap-1.5 text-sm font-semibold">
-          <Sparkles className="size-4 text-primary" />
+          <Lightbulb className="size-4 text-primary" />
           AI Insights
         </p>
 

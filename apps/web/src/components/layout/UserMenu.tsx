@@ -1,4 +1,4 @@
-import { LogOut, Sparkles, User as UserIcon } from "lucide-react";
+import { Crown, LogOut, User as UserIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -57,8 +57,11 @@ export function UserMenu() {
 
         {subscription !== "PREMIUM" && (
           <>
-            <DropdownMenuItem render={<Link to="/settings#billing" />}>
-              <Sparkles className="size-4" />
+            <DropdownMenuItem
+              render={<Link to="/settings#billing" />}
+              className="text-primary focus:bg-primary/10 focus:text-primary [&_svg]:text-primary"
+            >
+              <Crown className="size-4" />
               Upgrade to Premium
             </DropdownMenuItem>
             <DropdownMenuSeparator />

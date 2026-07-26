@@ -1,4 +1,4 @@
-import { CheckCircle2, ListChecks, PenLine, Repeat, ScrollText, Sparkles } from "lucide-react";
+import { CheckCircle2, Lightbulb, ListChecks, PenLine, Repeat, ScrollText } from "lucide-react";
 
 import { PageHeader } from "@/components/common/PageHeader";
 import { ErrorState } from "@/components/common/ErrorState";
@@ -88,7 +88,7 @@ export default function JournalInsightsPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Sparkles className="size-4" />
+                  <Lightbulb className="size-4" />
                   Recommendations
                 </CardTitle>
               </CardHeader>
