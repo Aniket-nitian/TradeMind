@@ -55,7 +55,7 @@ function MarketClock() {
   return (
     <div
       className={cn(
-        "ml-1 flex min-w-[280px] flex-1 items-center justify-between gap-3 rounded-lg border-l-2 px-4 py-2",
+        "flex w-[260px] shrink-0 items-center justify-between gap-3 rounded-lg border-l-2 px-4 py-2",
         open ? "border-success bg-success/10" : "border-destructive bg-destructive/10"
       )}
     >
@@ -154,9 +154,9 @@ export function MarketTicker() {
             </div>
           );
         })}
-      </div>
 
-      <MarketClock />
+        <MarketClock />
+      </div>
 
       <button
         type="button"
