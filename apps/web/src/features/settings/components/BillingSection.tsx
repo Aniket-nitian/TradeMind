@@ -75,7 +75,7 @@ export function BillingSection() {
   };
 
   return (
-    <Card>
+    <Card id="billing">
       <CardHeader>
         <CardTitle>Subscription &amp; billing</CardTitle>
       </CardHeader>
