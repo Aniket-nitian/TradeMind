@@ -1,11 +1,12 @@
 # Build context is the repo root (needed for pnpm workspace files).
 # docker build -f apps/web/Dockerfile --build-arg VITE_API_URL=... --build-arg VITE_AI_URL=... .
 #
-# This image is for local/self-host parity (docker-compose). The actual free-tier
-# production deploy serves the same build output as a Render Static Site instead
-# (see render.yaml) rather than running this nginx container.
+# Mirrors production (render.yaml): serves the built SPA and proxies /api/*
+# to the API service through this same origin (see server.js), so the API's
+# refreshToken cookie is first-party instead of a cross-site cookie browsers
+# can block or clear on restart.
 
-FROM node:22-alpine AS build
+FROM node:22-alpine
 RUN corepack enable
 WORKDIR /repo
 
@@ -25,8 +26,6 @@ ENV VITE_GOOGLE_CLIENT_ID=${VITE_GOOGLE_CLIENT_ID}
 
 RUN pnpm --filter web build
 
-FROM nginx:alpine
-COPY --from=build /repo/apps/web/dist /usr/share/nginx/html
-COPY infrastructure/nginx/nginx.conf /etc/nginx/conf.d/default.conf
-
-EXPOSE 80
+WORKDIR /repo/apps/web
+EXPOSE 10000
+CMD ["node", "server.js"]
