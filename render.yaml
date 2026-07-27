@@ -3,8 +3,8 @@
 # Deploys:
 #   - trademind-api : Node/Express backend (Docker, free web service)
 #   - trademind-ai  : FastAPI AI service (Docker, free web service)
-#   - trademind-web : React frontend (Node service serving the built SPA + a
-#                     same-origin proxy to trademind-api at /api — see below)
+#   - trademind-web : React frontend (static site, free + unmetered) — rewrites
+#                     /api/* to trademind-api so the login cookie stays first-party
 #
 # Postgres is NOT declared here — this project uses a free Neon project
 # instead of Render's free Postgres (Neon doesn't expire after 30 days).
@@ -104,22 +104,30 @@ services:
 
   - type: web
     name: trademind-web
-    runtime: node
-    plan: free
+    runtime: static
     buildCommand: pnpm install --frozen-lockfile --filter web... && pnpm --filter web build
-    startCommand: node apps/web/server.js
+    staticPublishPath: apps/web/dist
     envVars:
       - key: VITE_API_URL
-        value: /api/v1 # relative — see API_PROXY_TARGET below for why
+        value: /api/v1 # relative — see the /api/* rewrite rule below for why
       - key: VITE_AI_URL
         sync: false # https://trademind-ai.onrender.com/api/v1 (no cookies involved, safe to call cross-origin directly)
       - key: VITE_GOOGLE_CLIENT_ID
         sync: false # same value as GOOGLE_CLIENT_ID on trademind-api
-      - key: API_PROXY_TARGET
-        sync: false # https://trademind-api.onrender.com — server.js proxies /api/* here.
-        # Different onrender.com subdomains count as different *sites* to the
-        # browser (onrender.com is on the public suffix list), so the API's
-        # refreshToken cookie was a third-party cookie — browsers routinely
-        # block/clear those (especially across a full browser restart),
-        # logging users out even though the cookie's own maxAge was 30 days.
-        # Proxying /api through this same origin makes the cookie first-party.
+    routes:
+      # Different onrender.com subdomains count as different *sites* to the
+      # browser (onrender.com is on the public suffix list), so calling the
+      # API directly made its refreshToken cookie a third-party cookie —
+      # browsers routinely block/clear those (especially across a full
+      # browser restart), logging users out even though the cookie's own
+      # maxAge was 30 days. Rewriting /api/* to the API through this same
+      # origin makes the cookie first-party. Must come before the SPA
+      # fallback rule below, and the destination is intentionally a literal
+      # URL (Render route destinations can't reference another service's URL
+      # dynamically) — update it if trademind-api's URL ever changes.
+      - type: rewrite
+        source: /api/*
+        destination: https://trademind-api-y2om.onrender.com/api/*
+      - type: rewrite
+        source: /*
+        destination: /index.html

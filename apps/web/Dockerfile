@@ -2,11 +2,11 @@
 # docker build -f apps/web/Dockerfile --build-arg VITE_API_URL=... --build-arg VITE_AI_URL=... .
 #
 # Mirrors production (render.yaml): serves the built SPA and proxies /api/*
-# to the API service through this same origin (see server.js), so the API's
+# to the API service through this same origin (see nginx.conf), so the API's
 # refreshToken cookie is first-party instead of a cross-site cookie browsers
 # can block or clear on restart.
 
-FROM node:22-alpine
+FROM node:22-alpine AS build
 RUN corepack enable
 WORKDIR /repo
 
@@ -26,6 +26,8 @@ ENV VITE_GOOGLE_CLIENT_ID=${VITE_GOOGLE_CLIENT_ID}
 
 RUN pnpm --filter web build
 
-WORKDIR /repo/apps/web
-EXPOSE 10000
-CMD ["node", "server.js"]
+FROM nginx:alpine
+COPY --from=build /repo/apps/web/dist /usr/share/nginx/html
+COPY infrastructure/nginx/nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
