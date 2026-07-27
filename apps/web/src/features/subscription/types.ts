@@ -20,6 +20,7 @@ export interface SubscriptionDetails {
 export interface SubscriptionStatusResponse {
   plan: "FREE" | "PREMIUM";
   subscription: SubscriptionDetails | null;
+  isTestMode: boolean;
 }
 
 export interface SubscribeResponse {

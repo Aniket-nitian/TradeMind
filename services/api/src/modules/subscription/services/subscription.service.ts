@@ -3,6 +3,7 @@ import { authRepository } from "../../auth/repositories/auth.repository.js";
 import { subscriptionRepository } from "../repositories/subscription.repository.js";
 import { logAudit } from "../../../shared/services/audit-log.service.js";
 import { logger } from "../../../shared/logger/logger.js";
+import { env } from "../../../config/env.js";
 import * as razorpayProvider from "../providers/razorpay.provider.js";
 import {
     PaymentStatus,
@@ -65,6 +66,7 @@ export class SubscriptionService {
         return {
             plan: user.subscription,
             subscription,
+            isTestMode: env.RAZORPAY_KEY_ID.startsWith("rzp_test_"),
         };
     }
 

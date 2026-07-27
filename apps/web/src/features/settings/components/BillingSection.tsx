@@ -107,6 +107,18 @@ export function BillingSection() {
           </div>
         )}
 
+        {data?.isTestMode && data?.plan !== "PREMIUM" && (
+          <div className="rounded-lg border border-dashed border-muted-foreground/30 bg-muted/40 p-3 text-sm text-muted-foreground">
+            <p className="font-medium text-foreground">Demo checkout (test mode)</p>
+            <p className="mt-1">
+              Use test card <span className="font-mono text-foreground">4718 6091 0820 4366</span>,
+              any future expiry, any CVV, and any name to complete the payment.
+              Any other card number will be declined — this is Razorpay&apos;s test
+              environment, no real money moves.
+            </p>
+          </div>
+        )}
+
         <div className="flex gap-2">
           {data?.plan !== "PREMIUM" ? (
             <Button
