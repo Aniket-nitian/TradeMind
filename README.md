@@ -1,38 +1,35 @@
 # TradeMind AI
 
-A production-grade AI-powered trading journal for Indian traders. TradeMind AI helps traders log and analyze their trades, surface behavioral mistakes, manage strategies, and get AI-driven coaching grounded in their own trading history — with broker sync, portfolio tracking, and Razorpay-backed subscriptions built in.
+TradeMind AI is a trading journal built for Indian traders — the kind of tool I wanted myself: log trades, see where the money is actually being lost or made, and get coaching that's grounded in your own history instead of generic advice. It handles broker sync, portfolio tracking, and subscriptions through Razorpay.
 
 ## Live application
 
-| Service            | URL                                                                            |
-| ------------------ | ------------------------------------------------------------------------------- |
-| Web app            | [trademind-web-y2om.onrender.com](https://trademind-web-y2om.onrender.com)      |
-| API (Swagger docs) | [trademind-api-y2om.onrender.com/docs](https://trademind-api-y2om.onrender.com/docs) |
-| AI service (docs)  | [trademind-ai-y2om.onrender.com/docs](https://trademind-ai-y2om.onrender.com/docs) |
+| Service            | URL                                                                                   |
+| ------------------ | -------------------------------------------------------------------------------------- |
+| Web app            | [trademind-web-y2om.onrender.com](https://trademind-web-y2om.onrender.com)             |
+| API (Swagger docs) | [trademind-api-y2om.onrender.com/docs](https://trademind-api-y2om.onrender.com/docs)   |
+| AI service (docs)  | [trademind-ai-y2om.onrender.com/docs](https://trademind-ai-y2om.onrender.com/docs)     |
 
-> Hosted on Render's free tier — the API and AI service spin down after periods of inactivity, so the first request after a while can take up to ~30s to wake up.
->
-> Payments run in Razorpay **Test Mode** (no real business KYC on this project) — the Upgrade to Premium flow works end-to-end with Razorpay's test card `4718 6091 0820 4366` (any future expiry, any CVV).
+Hosted on Render's free tier, so the API and AI service spin down when idle. If nobody's hit them in a while, the first request wakes the container back up and can take 30-50 seconds — the app shows a "waking up the server" message in that window instead of just hanging.
 
-## Features
+Payments run in Razorpay Test Mode (no business KYC behind this project), so Upgrade to Premium works end to end with the test card `4718 6091 0820 4366` and any future expiry/CVV.
 
-- **Trading journal** — trade CRUD, journal notes, checklists, emotion tagging, image attachments, CSV import (Groww/Zerodha/Fyers/Angel One + generic fallback)
-- **Analytics dashboard** — win rate, PnL, expectancy, equity curve, drawdown, calendar heatmap, streaks, and more
-- **AI coaching** (Gemini + LangGraph) — daily brief, trade review, psychology coach, strategy advisor, performance coach, journal insights, conversational chat assistant with long-term memory and RAG over your own journal entries
-- **Broker integration** — live trade sync (Dhan, with a modular provider architecture for adding more)
-- **Portfolio tracking** — capital ledger, holdings, daily snapshots, allocation analytics
-- **Subscriptions** — Razorpay-backed Premium plan with usage gating
-- **Notifications** — in-app + email, daily/weekly summaries
-- **Auth** — email/password and Google OAuth, with session refresh via httpOnly cookies
+## What it does
+
+The core is a trading journal: full trade CRUD, notes, checklists, emotion tagging on each trade, image attachments, and CSV import for Groww, Zerodha, Fyers and Angel One (plus a generic fallback for anything else). On top of that sits an analytics dashboard covering win rate, PnL, expectancy, equity curve, drawdown, a calendar heatmap and streaks.
+
+The part I spent the most time on is the AI layer — a set of Gemini/LangGraph agents that actually look at a user's own trades rather than giving canned answers: a daily brief, a trade review agent, a psychology coach that flags behavioral patterns, a strategy advisor, a performance coach, journal insight generation, and a conversational assistant that keeps long-term memory and does RAG over the user's journal entries.
+
+Beyond that: live broker sync (currently Dhan, built with a provider interface so more brokers can be added), portfolio tracking with a capital ledger and daily snapshots, Razorpay subscriptions with usage gating on the free plan, in-app and email notifications, and auth via email/password or Google OAuth with refresh handled through httpOnly cookies.
 
 ## Tech stack
 
-| Layer      | Stack                                                              |
-| ---------- | ------------------------------------------------------------------- |
-| Frontend   | React, TypeScript, Vite, Tailwind CSS, TanStack Query, Zustand       |
-| Backend    | Node.js, Express, TypeScript, PostgreSQL, Prisma                    |
-| AI service | Python, FastAPI, LangGraph, LangChain, Google Gemini                |
-| Infra      | Docker, Docker Compose, GitHub Actions, Render, Neon                 |
+| Layer      | Stack                                                          |
+| ---------- | ----------------------------------------------------------------|
+| Frontend   | React, TypeScript, Vite, Tailwind CSS, TanStack Query, Zustand |
+| Backend    | Node.js, Express, TypeScript, PostgreSQL, Prisma               |
+| AI service | Python, FastAPI, LangGraph, LangChain, Google Gemini            |
+| Infra      | Docker, Docker Compose, GitHub Actions, Render, Neon            |
 
 ## Architecture
 
@@ -50,7 +47,7 @@ trademind-api ──▶ Neon Postgres (pooled connection for queries,
 trademind-api ──▶ Razorpay (subscriptions), Cloudinary (images), SMTP (email)
 ```
 
-The web app rewrites API calls through its own origin (a Render static-site rewrite rule, see `render.yaml`) rather than the browser calling `trademind-api` directly. This keeps the login session's refresh-token cookie first-party — `trademind-web` and `trademind-api` are separate Render services on different subdomains, which browsers treat as different *sites*, and a cross-site cookie is routinely blocked or cleared by browsers on a full restart. Locally, `infrastructure/nginx/nginx.conf` does the same thing via an nginx `proxy_pass`.
+One detail worth explaining: the web app proxies API calls through its own origin instead of the browser hitting `trademind-api` directly. `trademind-web` and `trademind-api` are separate Render services on different subdomains, and browsers treat different `onrender.com` subdomains as different sites — so the login session's refresh-token cookie would be third-party and browsers routinely clear those on a restart. Routing `/api/*` through the same origin (a rewrite rule in `render.yaml`) keeps the cookie first-party. Locally, `infrastructure/nginx/nginx.conf` does the same job.
 
 ## Monorepo layout
 
@@ -62,15 +59,15 @@ services/
   ai/             FastAPI AI service (LangGraph agents)
 infrastructure/
   docker/         Dockerfiles referenced by docker-compose
-  nginx/          nginx config for the local web container (mirrors the Render rewrite rule)
+  nginx/          nginx config for the local web container
   scripts/        container entrypoint scripts
 ```
 
-Managed as a pnpm workspace (`apps/*`, `services/*`, `packages/*`) orchestrated with Turborepo.
+pnpm workspace (`apps/*`, `services/*`, `packages/*`), built with Turborepo.
 
 ## Local development
 
-Requirements: Node 22+, pnpm 10, Python 3.13, PostgreSQL.
+You'll need Node 22+, pnpm 10, Python 3.13, and PostgreSQL.
 
 ```bash
 pnpm install
@@ -96,14 +93,14 @@ uvicorn app.main:app --reload --port 8000  # http://localhost:8000 (Swagger: /do
 docker compose up --build
 ```
 
-Brings up Postgres, the API, the AI service, and the frontend together at `http://localhost:3000`. See `docker-compose.yml` for service wiring and required environment variables.
+Brings up Postgres, the API, the AI service and the frontend together at `http://localhost:3000`. Check `docker-compose.yml` for service wiring and the env vars each one expects.
 
 ## Deployment
 
-See `render.yaml` for the deployment blueprint:
+`render.yaml` is the deployment blueprint:
 
 - `trademind-api` — Node/Express backend (Docker)
 - `trademind-ai` — FastAPI AI service (Docker)
 - `trademind-web` — static site serving the built frontend, with a rewrite rule proxying `/api/*` to `trademind-api`
 
-Postgres is a separate free [Neon](https://neon.tech) project (not declared in `render.yaml`) — Neon doesn't expire after 30 days the way Render's free Postgres does.
+Postgres runs on a separate free [Neon](https://neon.tech) project rather than Render's own Postgres, since Neon doesn't expire after 30 days.
