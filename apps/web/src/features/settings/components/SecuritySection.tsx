@@ -1,5 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { KeyRound, Pencil } from "lucide-react";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -22,6 +24,7 @@ const schema = z
 type FormValues = z.infer<typeof schema>;
 
 export function SecuritySection() {
+  const [isEditing, setIsEditing] = useState(false);
   const changePassword = useChangePassword();
 
   const {
@@ -34,9 +37,19 @@ export function SecuritySection() {
   const onSubmit = handleSubmit((values) => {
     changePassword.mutate(
       { currentPassword: values.currentPassword, newPassword: values.newPassword },
-      { onSuccess: () => reset() }
+      {
+        onSuccess: () => {
+          reset();
+          setIsEditing(false);
+        },
+      }
     );
   });
+
+  const handleCancel = () => {
+    reset();
+    setIsEditing(false);
+  };
 
   return (
     <Card id="security">
@@ -44,48 +57,71 @@ export function SecuritySection() {
         <CardTitle>Password</CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={onSubmit} className="flex flex-col gap-4">
-          <FieldGroup>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-              <Field>
-                <FieldLabel htmlFor="currentPassword">Current password</FieldLabel>
-                <Input
-                  id="currentPassword"
-                  type="password"
-                  autoComplete="current-password"
-                  {...register("currentPassword")}
-                />
-                <FieldError errors={[errors.currentPassword]} />
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="newPassword">New password</FieldLabel>
-                <Input
-                  id="newPassword"
-                  type="password"
-                  autoComplete="new-password"
-                  {...register("newPassword")}
-                />
-                <FieldError errors={[errors.newPassword]} />
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="confirmPassword">Confirm new password</FieldLabel>
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  autoComplete="new-password"
-                  {...register("confirmPassword")}
-                />
-                <FieldError errors={[errors.confirmPassword]} />
-              </Field>
+        {!isEditing && (
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <KeyRound className="size-4 text-muted-foreground" />
+              <div>
+                <p className="text-sm font-medium">••••••••••••</p>
+                <p className="text-xs text-muted-foreground">
+                  Change the password used to log in.
+                </p>
+              </div>
             </div>
-          </FieldGroup>
-
-          <div className="flex justify-end">
-            <Button type="submit" disabled={changePassword.isPending}>
-              {changePassword.isPending ? "Changing…" : "Change password"}
+            <Button variant="outline" onClick={() => setIsEditing(true)}>
+              <Pencil className="size-4" />
+              Change password
             </Button>
           </div>
-        </form>
+        )}
+
+        {isEditing && (
+          <form onSubmit={onSubmit} className="flex flex-col gap-4">
+            <FieldGroup>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                <Field>
+                  <FieldLabel htmlFor="currentPassword">Current password</FieldLabel>
+                  <Input
+                    id="currentPassword"
+                    type="password"
+                    autoComplete="current-password"
+                    {...register("currentPassword")}
+                  />
+                  <FieldError errors={[errors.currentPassword]} />
+                </Field>
+                <Field>
+                  <FieldLabel htmlFor="newPassword">New password</FieldLabel>
+                  <Input
+                    id="newPassword"
+                    type="password"
+                    autoComplete="new-password"
+                    {...register("newPassword")}
+                  />
+                  <FieldError errors={[errors.newPassword]} />
+                </Field>
+                <Field>
+                  <FieldLabel htmlFor="confirmPassword">Confirm new password</FieldLabel>
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    autoComplete="new-password"
+                    {...register("confirmPassword")}
+                  />
+                  <FieldError errors={[errors.confirmPassword]} />
+                </Field>
+              </div>
+            </FieldGroup>
+
+            <div className="flex justify-end gap-2">
+              <Button type="button" variant="outline" onClick={handleCancel}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={changePassword.isPending}>
+                {changePassword.isPending ? "Changing…" : "Save password"}
+              </Button>
+            </div>
+          </form>
+        )}
       </CardContent>
     </Card>
   );
