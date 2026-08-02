@@ -9,6 +9,7 @@ import { ProfileSection } from "../components/ProfileSection";
 import { TradingPreferencesSection } from "../components/TradingPreferencesSection";
 import { NotificationsSection } from "../components/NotificationsSection";
 import { SessionsSection } from "../components/SessionsSection";
+import { SecuritySection } from "../components/SecuritySection";
 import { BrokerSection } from "../components/BrokerSection";
 import { SyncHistorySection } from "@/features/broker/components/SyncHistorySection";
 import { BillingSection } from "../components/BillingSection";
@@ -35,6 +36,8 @@ export default function SettingsPage() {
       {data && (
         <div className="flex flex-col gap-6">
           <ProfileSection profile={data.profile} />
+
+          <SecuritySection />
 
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             <TradingPreferencesSection profile={data.profile} />

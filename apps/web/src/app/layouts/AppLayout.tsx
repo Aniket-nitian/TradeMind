@@ -3,6 +3,7 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { Topbar } from "@/components/layout/Topbar";
 import { MarketNewsTicker } from "@/components/layout/MarketNewsTicker";
 import { MarketTicker } from "@/components/layout/MarketTicker";
+import { EmailVerificationBanner } from "@/components/layout/EmailVerificationBanner";
 
 export default function AppLayout() {
   return (
@@ -11,6 +12,7 @@ export default function AppLayout() {
 
       <div className="flex flex-1 flex-col overflow-hidden">
         <Topbar />
+        <EmailVerificationBanner />
         <MarketNewsTicker />
         <MarketTicker />
 

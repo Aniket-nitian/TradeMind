@@ -1,19 +1,31 @@
-import { Laptop, Trash2 } from "lucide-react";
+import { Laptop, ShieldOff, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useLogoutAll } from "@/features/auth/hooks";
 import { formatDateTime } from "@/lib/utils";
 import { useRevokeSession, useSessions } from "../hooks";
 
 export function SessionsSection() {
   const { data: sessions, isLoading } = useSessions();
   const revoke = useRevokeSession();
+  const logoutAll = useLogoutAll();
 
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0">
         <CardTitle>Active sessions</CardTitle>
+        <Button
+          variant="outline"
+          size="sm"
+          className="text-destructive"
+          disabled={logoutAll.isPending}
+          onClick={() => logoutAll.mutate()}
+        >
+          <ShieldOff className="size-4" />
+          Log out of all devices
+        </Button>
       </CardHeader>
       <CardContent className="flex flex-col divide-y divide-border">
         {isLoading && <Skeleton className="h-20 w-full rounded-lg" />}

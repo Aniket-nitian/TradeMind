@@ -9,6 +9,9 @@ import { RootRedirect } from "./routes/RootRedirect";
 
 import LoginPage from "@/features/auth/pages/LoginPage";
 import RegisterPage from "@/features/auth/pages/RegisterPage";
+import ForgotPasswordPage from "@/features/auth/pages/ForgotPasswordPage";
+import ResetPasswordPage from "@/features/auth/pages/ResetPasswordPage";
+import VerifyEmailPage from "@/features/auth/pages/VerifyEmailPage";
 import DashboardPage from "@/features/dashboard/pages/DashboardPage";
 import TradeListPage from "@/features/trades/pages/TradeListPage";
 import TradeDetailPage from "@/features/trades/pages/TradeDetailPage";
@@ -35,9 +38,15 @@ export const router = createBrowserRouter([
         children: [
           { path: "/login", element: <LoginPage /> },
           { path: "/register", element: <RegisterPage /> },
+          { path: "/forgot-password", element: <ForgotPasswordPage /> },
+          { path: "/reset-password", element: <ResetPasswordPage /> },
         ],
       },
     ],
+  },
+  {
+    element: <AuthLayout />,
+    children: [{ path: "/verify-email", element: <VerifyEmailPage /> }],
   },
   {
     element: <ProtectedRoute />,

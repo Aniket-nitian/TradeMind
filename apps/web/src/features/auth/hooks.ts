@@ -7,7 +7,13 @@ import { normalizeError } from "@/lib/api/normalize-error";
 import { refreshAccessToken } from "@/lib/api/refresh";
 import { useAuthStore } from "@/store/auth-store";
 
-import { authApi, type LoginInput, type RegisterInput } from "./api";
+import {
+  authApi,
+  type ChangePasswordInput,
+  type LoginInput,
+  type RegisterInput,
+  type ResetPasswordInput,
+} from "./api";
 
 export function useRegister() {
   return useMutation({
@@ -62,6 +68,58 @@ export function useLogout() {
   return useMutation({
     mutationFn: () => authApi.logout(),
     onSettled: () => clearSession(),
+  });
+}
+
+export function useLogoutAll() {
+  const clearSession = useAuthStore((s) => s.clearSession);
+
+  return useMutation({
+    mutationFn: () => authApi.logoutAll(),
+    onSuccess: () => toast.success("Logged out of all devices."),
+    onError: (error) => toast.error(normalizeError(error)),
+    onSettled: () => clearSession(),
+  });
+}
+
+export function useForgotPassword() {
+  return useMutation({
+    mutationFn: (email: string) => authApi.forgotPassword(email),
+    onError: (error) => toast.error(normalizeError(error)),
+  });
+}
+
+export function useResetPassword() {
+  return useMutation({
+    mutationFn: (payload: ResetPasswordInput) => authApi.resetPassword(payload),
+    onError: (error) => toast.error(normalizeError(error)),
+  });
+}
+
+export function useVerifyEmail(token: string | null) {
+  return useQuery({
+    queryKey: ["auth", "verify-email", token],
+    queryFn: () => authApi.verifyEmail(token!),
+    enabled: !!token,
+    retry: false,
+    staleTime: Infinity,
+    meta: { silent: true },
+  });
+}
+
+export function useResendVerification() {
+  return useMutation({
+    mutationFn: () => authApi.resendVerification(),
+    onSuccess: () => toast.success("Verification email sent — check your inbox."),
+    onError: (error) => toast.error(normalizeError(error)),
+  });
+}
+
+export function useChangePassword() {
+  return useMutation({
+    mutationFn: (payload: ChangePasswordInput) => authApi.changePassword(payload),
+    onSuccess: () => toast.success("Password changed successfully."),
+    onError: (error) => toast.error(normalizeError(error)),
   });
 }
 

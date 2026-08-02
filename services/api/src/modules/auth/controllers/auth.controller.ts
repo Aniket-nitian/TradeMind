@@ -15,11 +15,7 @@ import type { AuthRequest } from "../guards/auth.guard.js";
 
 const isProd = process.env.NODE_ENV === "production";
 
-// The web app and API are on different subdomains in production (both under
-// onrender.com, which is itself in the Public Suffix List — so they're
-// cross-site, not just cross-origin). A Lax cookie is dropped on the
-// cross-site XHR calls the frontend makes, so refresh silently fails on
-// every reload. None is required to actually reach the API in that setup.
+
 const REFRESH_COOKIE_OPTIONS = {
   httpOnly: true,
   secure: isProd,
