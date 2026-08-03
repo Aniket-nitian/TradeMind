@@ -50,19 +50,23 @@ export function AuthShowcase() {
     >
       <div className="pointer-events-none absolute -top-24 -left-24 size-96 rounded-full bg-primary/25 blur-3xl" />
       <div className="pointer-events-none absolute -right-16 -bottom-32 size-96 rounded-full bg-[oklch(0.72_0.17_152)]/10 blur-3xl" />
+      <div className="pointer-events-none absolute top-1/3 -right-20 size-64 rounded-full bg-accent-violet/15 blur-3xl" />
 
       <div className="pointer-events-none absolute inset-x-10 bottom-28 flex h-28 items-end gap-1.5 opacity-[0.18]">
         {BAR_HEIGHTS.map((h, i) => (
           <div
             key={i}
-            className="w-2.5 flex-1 rounded-full bg-gradient-to-t from-primary to-transparent"
+            className={cn(
+              "w-2.5 flex-1 rounded-full bg-gradient-to-t to-transparent",
+              i % 3 === 2 ? "from-accent-violet" : "from-primary"
+            )}
             style={{ height: `${h}%` }}
           />
         ))}
       </div>
 
       <div className="relative flex items-center gap-2">
-        <div className="flex size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+        <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-brand text-primary-foreground">
           <TrendingUp className="size-5" />
         </div>
         <span className="text-lg font-semibold text-white">TradeMind AI</span>

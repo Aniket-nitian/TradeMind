@@ -20,7 +20,7 @@ export function Stepper({ steps, currentStep }: StepperProps) {
                 className={cn(
                   "flex size-8 shrink-0 items-center justify-center rounded-full border-2 text-xs font-semibold transition-colors",
                   isDone
-                    ? "border-primary bg-primary text-primary-foreground"
+                    ? "border-primary bg-gradient-brand text-primary-foreground"
                     : isCurrent
                       ? "border-primary text-primary"
                       : "border-border text-muted-foreground"
@@ -41,7 +41,7 @@ export function Stepper({ steps, currentStep }: StepperProps) {
               <div
                 className={cn(
                   "mx-2 h-0.5 flex-1 rounded-full transition-colors",
-                  isDone ? "bg-primary" : "bg-border"
+                  isDone ? "bg-gradient-brand" : "bg-border"
                 )}
               />
             )}

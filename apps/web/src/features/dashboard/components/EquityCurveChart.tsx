@@ -71,6 +71,7 @@ export function EquityCurveChart({ data }: { data: EquityPoint[] }) {
           />
 
           <Tooltip
+            cursor={{ fill: "var(--foreground)", opacity: 0.06 }}
             formatter={(value) => formatCurrency(Number(value))}
             labelFormatter={(label) => formatDate(String(label))}
             contentStyle={{

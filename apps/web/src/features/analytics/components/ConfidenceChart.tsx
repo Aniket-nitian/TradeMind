@@ -55,7 +55,7 @@ export function ConfidenceChart({ data }: { data: ConfidenceBucket[] }) {
         <Line
           type="monotone"
           dataKey="netPnL"
-          stroke="var(--chart-series-1)"
+          stroke="var(--accent-violet)"
           strokeWidth={2}
           dot={{ r: 3 }}
         />

@@ -71,7 +71,7 @@ export function DisciplineBreakdown({ trades }: { trades: Trade[] }) {
           caption={
             stats.planPct === null ? "No journal entries yet" : "Trades that followed the plan"
           }
-          color="var(--chart-series-1)"
+          color="var(--accent-violet)"
         />
         <BreakdownBar
           label="Risk/reward discipline"

@@ -27,6 +27,8 @@
   --color-success-foreground: var(--success-foreground);
   --color-warning: var(--warning);
   --color-warning-foreground: var(--warning-foreground);
+  --color-accent-violet: var(--accent-violet);
+  --color-accent-violet-foreground: var(--accent-violet-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -66,6 +68,8 @@
   --success-foreground: oklch(0.99 0 0);
   --warning: oklch(0.7 0.16 80);
   --warning-foreground: oklch(0.2 0.03 80);
+  --accent-violet: oklch(0.55 0.22 296);
+  --accent-violet-foreground: oklch(0.99 0 0);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
@@ -87,7 +91,9 @@
      have a stable semantic palette independent of neutral theme tweaks. */
   --chart-series-1: oklch(0.55 0.18 255);
   --chart-series-2: oklch(0.7 0.16 80);
-  --chart-series-3: oklch(0.6 0.14 300);
+  --chart-series-3: oklch(0.55 0.22 296);
+  --chart-series-4: oklch(0.6 0.14 190);
+  --chart-series-5: oklch(0.6 0.2 350);
   --chart-grid: oklch(0.922 0 0);
   --chart-axis: oklch(0.556 0 0);
   --chart-delta-good: oklch(0.55 0.16 145);
@@ -104,7 +110,7 @@
   --card-foreground: oklch(0.96 0.005 260);
   --popover: oklch(0.225 0.02 260);
   --popover-foreground: oklch(0.96 0.005 260);
-  --primary: oklch(0.62 0.19 259);
+  --primary: oklch(0.64 0.22 259);
   --primary-foreground: oklch(0.99 0 0);
   --secondary: oklch(0.27 0.02 260);
   --secondary-foreground: oklch(0.92 0.01 260);
@@ -112,11 +118,13 @@
   --muted-foreground: oklch(0.65 0.02 260);
   --accent: oklch(0.29 0.03 259);
   --accent-foreground: oklch(0.95 0.01 260);
-  --destructive: oklch(0.63 0.21 25);
-  --success: oklch(0.72 0.17 152);
+  --destructive: oklch(0.64 0.23 25);
+  --success: oklch(0.74 0.19 152);
   --success-foreground: oklch(0.99 0 0);
-  --warning: oklch(0.79 0.16 80);
+  --warning: oklch(0.8 0.19 80);
   --warning-foreground: oklch(0.2 0.03 80);
+  --accent-violet: oklch(0.68 0.22 296);
+  --accent-violet-foreground: oklch(0.99 0 0);
   --border: oklch(1 0 0 / 6%);
   --input: oklch(1 0 0 / 10%);
   --ring: oklch(0.62 0.19 259 / 60%);
@@ -134,13 +142,15 @@
   --sidebar-border: oklch(1 0 0 / 6%);
   --sidebar-ring: oklch(0.62 0.19 259 / 40%);
 
-  --chart-series-1: oklch(0.68 0.18 259);
-  --chart-series-2: oklch(0.79 0.16 80);
-  --chart-series-3: oklch(0.7 0.14 300);
+  --chart-series-1: oklch(0.68 0.2 259);
+  --chart-series-2: oklch(0.8 0.19 80);
+  --chart-series-3: oklch(0.68 0.22 296);
+  --chart-series-4: oklch(0.72 0.16 190);
+  --chart-series-5: oklch(0.7 0.2 350);
   --chart-grid: oklch(1 0 0 / 8%);
   --chart-axis: oklch(0.55 0.02 260);
-  --chart-delta-good: oklch(0.72 0.17 152);
-  --chart-delta-critical: oklch(0.66 0.21 25);
+  --chart-delta-good: oklch(0.74 0.19 152);
+  --chart-delta-critical: oklch(0.67 0.23 25);
 }
 
 @layer base {
@@ -167,4 +177,10 @@
 
 .animate-marquee {
   animation: marquee linear infinite;
+}
+
+@layer utilities {
+  .bg-gradient-brand {
+    background-image: linear-gradient(135deg, var(--primary), var(--accent-violet));
+  }
 }

@@ -45,9 +45,9 @@ export function DashboardOnboarding() {
 
   return (
     <div className="flex flex-col gap-6">
-      <Card className="overflow-hidden border-primary/20 bg-gradient-to-br from-primary/10 via-card to-card">
+      <Card className="overflow-hidden border-primary/20 bg-gradient-to-br from-primary/15 via-card to-accent-violet/10">
         <CardContent className="flex flex-col items-center gap-2 py-12 text-center">
-          <div className="mb-1 flex size-12 items-center justify-center rounded-2xl bg-primary/15 text-primary">
+          <div className="mb-1 flex size-12 items-center justify-center rounded-2xl bg-gradient-brand text-primary-foreground">
             <TrendingUp className="size-6" />
           </div>
           <h2 className="text-xl font-semibold">
@@ -68,7 +68,7 @@ export function DashboardOnboarding() {
             onClick={() => navigate(to)}
             className="group flex flex-col items-start gap-3 rounded-xl border border-border bg-card p-5 text-left transition-colors hover:border-primary/40 hover:bg-primary/5"
           >
-            <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+            <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors group-hover:bg-gradient-brand group-hover:text-primary-foreground">
               <Icon className="size-5" />
             </div>
             <div>

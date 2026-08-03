@@ -19,7 +19,7 @@ export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <div className="flex h-full flex-col">
       <div className="flex h-14 items-center gap-2 px-4">
-        <div className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+        <div className="flex size-8 items-center justify-center rounded-lg bg-gradient-brand text-primary-foreground">
           <TrendingUp className="size-4" />
         </div>
         <span className="text-base font-semibold">TradeMind AI</span>
@@ -59,7 +59,7 @@ export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             <span className="truncate text-xs text-muted-foreground">{user?.email}</span>
           </div>
           {subscription && (
-            <Badge variant={subscription === "PREMIUM" ? "default" : "secondary"}>
+            <Badge variant={subscription === "PREMIUM" ? "brand" : "secondary"}>
               {subscription}
             </Badge>
           )}

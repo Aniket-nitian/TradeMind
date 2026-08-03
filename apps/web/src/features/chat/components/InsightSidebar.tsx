@@ -54,7 +54,7 @@ export function InsightSidebar() {
   return (
     <div className="flex flex-col gap-3">
       {performance.data && (
-        <Card className="bg-gradient-to-br from-primary/20 to-primary/5">
+        <Card className="bg-gradient-to-br from-primary/20 via-primary/5 to-accent-violet/15">
           <CardContent className="flex flex-col gap-2">
             <p className="flex items-center gap-1.5 text-sm font-semibold">
               <BarChart3 className="size-4" />
